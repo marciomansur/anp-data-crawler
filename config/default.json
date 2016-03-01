@@ -6,7 +6,7 @@
   "anp_urls": {
     "cities": "http://www.anp.gov.br/preco/prc/Resumo_Por_Estado_Municipio.asp",
     "index": "http://www.anp.gov.br/preco/prc/Resumo_Por_Estado_Index.asp"
-  }
+  },
   "db": {
 
   }

@@ -7,5 +7,4 @@ import gulp from 'gulp';
 gulp.task('watch', () => {
 
     gulp.watch([`**/*.js`,`!node_modules/**`], ['lint']);
-    gulp.watch([`**/*.js`,`!node_modules/**`], ['start']);
 });

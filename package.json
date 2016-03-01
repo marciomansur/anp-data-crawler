@@ -23,6 +23,7 @@
     "should": "^8.2.2"
   },
   "dependencies": {
+    "body-parser": "^1.15.0",
     "cheerio": "^0.20.0",
     "config": "^1.19.0",
     "express": "^4.13.4",
