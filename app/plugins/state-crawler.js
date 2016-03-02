@@ -1,48 +1,62 @@
 'use strict';
 
-var request = require('request');
+var request = require('request-promise');
 var cheerio = require('cheerio');
 var config  = require('config');
 
-// Scraping the page method
-module.exports = (callback) => {
+// Scraping the Index page method
+module.exports = () => {
 
-    var json = {};
+    return new Promise((resolve, reject) => {
 
-    // First request: get the states and week
-    request
-        (config.get("anp_urls.index"), (err, response, html) => {
+        var json = {};
 
-            if(err)
-                return callback(err, false);
+        let options = {
 
-            // load the html file as a jQuery DOM
-            let $ = cheerio.load(html);
+            url: config.get('anp_urls.index'),
+            transform: function(body) {
+                return cheerio.load(body);
+            }
+        };
 
-            // Get the data inside the form
-            $("#frmAberto").filter(() => {
+        // First request: get the states and week
+        request
+            (options)
+                .then(($) => {
 
-                var fuels = [];
-                var states = [];
+                    // Get the data inside the form
+                    $("#frmAberto").filter(() => {
 
-                json.week       = $('[name="cod_Semana"]').val();
-                json.selWeek    = $('[name="selSemana"]').val();
-                json.descWeek   = $('[name="desc_Semana"]').val();
-                json.type       = $('[name="type"]').val();
+                        var fuels = [];
+                        var states = [];
 
-                // Get all the fuels
-                $('#selCombustivel option').each(() => {
+                        json.week       = $('[name="cod_Semana"]').val();
+                        json.selWeek    = $('[name="selSemana"]').val();
+                        json.descWeek   = $('[name="desc_Semana"]').val();
+                        json.type       = $('[name="type"]').val();
 
-                    fuels.push($(this).val());
+                        // Get all the fuels (code can't be es6)
+                        $('#selCombustivel option').each(function() {
+
+                            fuels.push($(this).val());
+                        });
+
+                        // Get all the states
+                        $('[name="selEstado"]>option').each(function() {
+
+                            states.push($(this).val());
+                        });
+
+                        json.fuels  = fuels;
+                        json.states = states;
+
+                        resolve(json);
+                    });
+                })
+                .catch((err) => {
+
+                    reject(err);
                 });
+    });
 
-                // Get all the states
-                $('#selEstado').each(() => {
-
-                    states.push($(this).val());
-                });
-
-                callback(null, json);
-            });
-        });
 };

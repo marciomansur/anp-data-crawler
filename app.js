@@ -2,6 +2,8 @@ var express     = require('express');
 var config      = require('config');
 var bodyParser 	= require('body-parser');
 
+var crawler = require('./app/plugins/state-crawler');
+
 var app = express();
 var port = process.env.PORT || 8080;
 
@@ -12,6 +14,18 @@ app.set('port', port);
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
+app.get('/', function(req, res){
+
+    crawler()
+        .then((data) => {
+
+            res.json(data);
+        })
+        .catch((err) => {
+
+            res.json(err);
+        });
+});
 
 app.listen(app.get('port'), (err) =>{
 
