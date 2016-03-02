@@ -8,6 +8,10 @@
     "index": "http://www.anp.gov.br/preco/prc/Resumo_Por_Estado_Index.asp"
   },
   "db": {
-
+    "name": "",
+    "user": "",
+    "password": "",
+    "sgbd": "postgres",
+    "port": 5432
   }
 }
