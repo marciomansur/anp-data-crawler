@@ -2,7 +2,7 @@ var express     = require('express');
 var config      = require('config');
 var bodyParser 	= require('body-parser');
 
-var crawler = require('./app/plugins/state-crawler');
+var crawler = require('./app/plugins/cities-crawler');
 
 var app = express();
 var port = process.env.PORT || 8080;

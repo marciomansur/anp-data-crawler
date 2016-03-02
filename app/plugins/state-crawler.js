@@ -33,7 +33,7 @@ module.exports = () => {
                         json.week       = $('[name="cod_Semana"]').val();
                         json.selWeek    = $('[name="selSemana"]').val();
                         json.descWeek   = $('[name="desc_Semana"]').val();
-                        json.type       = $('[name="type"]').val();
+                        json.type       = $('[name="tipo"]').val();
 
                         // Get all the fuels (code can't be es6)
                         $('#selCombustivel option').each(function() {
