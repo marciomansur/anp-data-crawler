@@ -1,37 +1,39 @@
 'use strict';
-// Calling ORM
-var sequelize = require('../lib/db');
-var Sequelize = require('sequelize');
+module.exports = (sequelize, DataType) => {
 
-var Week = require('../models/week');
-var City = require('../models/city');
+  let States = sequelize.define('States', {
 
-var State = sequelize.define('State', {
+    id: {
+      type: DataType.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+    },
+    name: {
+      type: DataType.STRING,
+      allowNull: false
+    },
+    initials: {
+      type: DataType.STRING(2),
+      allowNull: false
+    },
+    week_id: {
+      type: DataType.STRING,
+      allowNull: false
+    }
 
-  id: {
-    type: Sequelize.INTEGER.UNSIGNED,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false
-  },
-  name: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
-  initials: {
-    type: Sequelize.STRING(2),
-    allowNull: false
-  }
+  }, {
 
-}, {
+    classMethods: {
+      associate: (models) => {
+        States.hasMany(models.Cities);
+      }
+    },
+    tableName: 'states',
+    timestamps: true,
+    paranoid: true
 
-  tableName: 'states',
-  timestamps: true,
-  paranoid: true
+  });
 
-});
-
-State.hasMany(Week);
-State.belongsTo(City);
-
-module.exports = State;
+  return States;
+};

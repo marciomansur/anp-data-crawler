@@ -1,11 +1,10 @@
 var express     = require('express');
 var config      = require('config');
 var bodyParser 	= require('body-parser');
-
-var crawler = require('./app/plugins/cities-crawler');
+var db          = require('./app/lib/db');
 
 var app = express();
-var port = process.env.PORT || 8080;
+var port = process.env.PORT || config.get("http.port");
 
 // Setting port
 app.set('port', port);
@@ -14,23 +13,15 @@ app.set('port', port);
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
-app.get('/', function(req, res){
+db.sequelize.sync().done(() =>{
 
-    crawler()
-        .then((data) => {
-
-            res.json(data);
-        })
-        .catch((err) => {
-
-            res.json(err);
-        });
-});
-
-app.listen(app.get('port'), (err) =>{
+  app.listen(app.get('port'), (err) =>{
 
     if(err)
-        return console.log(`Error when initializing the server: ${err}`);
+      return console.log(`Error when initializing the server: ${err}`);
 
     console.log(`Server up, port: ${port}`);
+  });
+
 });
+

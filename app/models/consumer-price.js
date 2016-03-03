@@ -1,47 +1,49 @@
 'use strict';
-// Calling ORM
-var sequelize = require('../lib/db');
-var Sequelize = require('sequelize');
 
-var Statistic = require('../models/statistic');
+module.exports = (sequelize, DataType) => {
 
-var ConsumerPrice = sequelize.define('ConsumerPrice', {
+  let ConsumersPrices = sequelize.define('ConsumersPrices', {
 
-  id: {
-    type: Sequelize.INTEGER.UNSIGNED,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false
-  },
-  averagePrice: {
-    type: Sequelize.DECIMAL(10, 3),
-    allowNull: false
-  },
-  standarDeviation: {
-    type: Sequelize.DECIMAL(10, 3),
-    allowNull: false
-  },
-  minPrice: {
-    type: Sequelize.DECIMAL(10, 3),
-    allowNull: false
-  },
-  maxPrice: {
-    type: Sequelize.DECIMAL(10, 3),
-    allowNull: false
-  },
-  averageMargin: {
-    type: Sequelize.DECIMAL(10, 3),
-    allowNull: false
-  }
+    id: {
+      type: DataType.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+    },
+    averagePrice: {
+      type: DataType.DECIMAL(10, 3),
+      allowNull: false
+    },
+    standarDeviation: {
+      type: DataType.DECIMAL(10, 3),
+      allowNull: false
+    },
+    minPrice: {
+      type: DataType.DECIMAL(10, 3),
+      allowNull: false
+    },
+    maxPrice: {
+      type: DataType.DECIMAL(10, 3),
+      allowNull: false
+    },
+    averageMargin: {
+      type: DataType.DECIMAL(10, 3),
+      allowNull: false
+    }
 
-}, {
+  }, {
 
-  tableName: 'consumerPrice',
-  timestamps: true,
-  paranoid: true
+    classMethods: {
+      associate: (models) => {
 
-});
+        ConsumersPrices.belongsTo(models.Statistics);
+      }
+    },
+    tableName: 'consumerPrice',
+    timestamps: true,
+    paranoid: true
 
-ConsumerPrice.belongsTo(Statistic);
+  });
 
-module.exports = ConsumerPrice;
+  return ConsumersPrices;
+};

@@ -1,35 +1,34 @@
 'use strict';
-// Calling ORM
-var sequelize = require('../lib/db');
-var Sequelize = require('sequelize');
+module.exports = (sequelize, DataType) => {
 
-var DistribuitionPrice = require('../models/distribuition-price');
-var ConsumerPrice       = require('../models/consumer-price');
-var City               = require('../models/city');
+  let Statistics = sequelize.define('Statistics', {
 
-var Statistics = sequelize.define('Statistics', {
+    id: {
+      type: DataType.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+    },
+    type: {
+      type: DataType.STRING,
+      allowNull: true
+    }
 
-  id: {
-    type: Sequelize.INTEGER.UNSIGNED,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false
-  },
-  type: {
-    type: Sequelize.STRING,
-    allowNull: true
-  }
+  }, {
 
-}, {
+    classMethods: {
+      associate: (models) => {
 
-  tableName: 'statistics',
-  timestamps: true,
-  paranoid: true
+        Statistics.hasOne(models.DistribuitionsPrices);
+        Statistics.hasOne(models.ConsumersPrices);
+        Statistics.belongsTo(models.Cities);
+      }
+    },
+    tableName: 'statistics',
+    timestamps: true,
+    paranoid: true
 
-});
+  });
 
-Statistics.hasOne(DistribuitionPrice);
-Statistics.hasOne(ConsumerPrice);
-Statistics.belongsTo(City);
-
-module.exports = Statistics;
+  return Statistics;
+};

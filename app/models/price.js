@@ -1,51 +1,55 @@
 'use strict';
-// Calling ORM
-var sequelize = require('../lib/db');
-var Sequelize = require('sequelize');
 
-var Station = require('../models/station');
+module.exports = (sequelize, DataType) => {
 
-var Price = sequelize.define('Price', {
+  let Prices = sequelize.define('Prices', {
 
-  id: {
-    type: Sequelize.INTEGER.UNSIGNED,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false
-  },
-  type: {
-    type: Sequelize.STRING(50),
-    allowNull: false
-  },
-  sellPrice: {
-    type: Sequelize.DECIMAL(10, 3),
-    allowNull: false
-  },
-  buyPrice: {
-    type: Sequelize.DECIMAL(10, 3),
-    allowNull: false
-  },
-  saleMode: {
-    type: Sequelize.STRING(10),
-    allowNull: false
-  },
-  provider: {
-    type: Sequelize.STRING(20),
-    allowNull: false
-  },
-  date: {
-    type: Sequelize.DATE,
-    allowNull: true
-  }
+    id: {
+      type: DataType.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+    },
+    type: {
+      type: DataType.STRING(50),
+      allowNull: false
+    },
+    sellPrice: {
+      type: DataType.DECIMAL(10, 3),
+      allowNull: false
+    },
+    buyPrice: {
+      type: DataType.DECIMAL(10, 3),
+      allowNull: false
+    },
+    saleMode: {
+      type: DataType.STRING(10),
+      allowNull: false
+    },
+    provider: {
+      type: DataType.STRING(20),
+      allowNull: false
+    },
+    date: {
+      type: DataType.DATE,
+      allowNull: true
+    }
 
-}, {
+  }, {
 
-  tableName: 'prices',
-  timestamps: true,
-  paranoid: true
+    classMethods: {
+      associate: (models) => {
 
-});
+        Prices.belongsTo(models.Stations);
+      }
+    },
+    tableName: 'prices',
+    timestamps: true,
+    paranoid: true
 
-Price.belongsTo(Station);
+  });
 
-module.exports = Price;
+  return Prices;
+};
+
+

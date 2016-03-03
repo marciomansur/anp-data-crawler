@@ -1,44 +1,45 @@
 'use strict';
-// Calling ORM
-var sequelize = require('../lib/db');
-var Sequelize = require('sequelize');
+module.exports = (sequelize, DataType) => {
 
-var Price = require('../models/price');
-var City = require('../models/city');
+  let Stations = sequelize.define('Stations', {
 
-var Station = sequelize.define('Station', {
+    id: {
+      type: DataType.INTEGER,
+      primaryKey: true,
+      autoIncrement: true,
+      allowNull: false
+    },
+    name: {
+      type: DataType.STRING,
+      allowNull: false
+    },
+    address: {
+      type: DataType.STRING,
+      allowNull: false
+    },
+    area: {
+      type: DataType.STRING,
+      allowNull: false
+    },
+    flag: {
+      type: DataType.STRING,
+      allowNull: true
+    }
 
-  id: {
-    type: Sequelize.INTEGER.UNSIGNED,
-    primaryKey: true,
-    autoIncrement: true,
-    allowNull: false
-  },
-  name: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
-  address: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
-  area: {
-    type: Sequelize.STRING,
-    allowNull: false
-  },
-  flag: {
-    type: Sequelize.STRING,
-    allowNull: true
-  }
+  }, {
 
-}, {
+    classMethods: {
+      associate: (models) => {
 
-  tableName: 'stations',
-  timestamps: true,
-  paranoid: true
-});
+        Stations.hasMany(models.Prices);
+        Stations.belongsTo(models.Cities);
+      }
+    },
+    tableName: 'stations',
+    timestamps: true,
+    paranoid: true
+  });
 
-Station.hasMany(Price);
-Station.belongsTo(City);
+  return Stations;
+};
 
-module.exports = Station;

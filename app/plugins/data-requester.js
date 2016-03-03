@@ -4,6 +4,8 @@ var request = require('request-promise');
 var cheerio = require('cheerio');
 var config  = require('config');
 
+
+
 // Scraping the Index page method
 module.exports = () => {
 
