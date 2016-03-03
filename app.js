@@ -1,4 +1,9 @@
-var express     = require('express');
+// Requiring the babel-register core
+require('babel-register')({
+  "presets": ["es2015"]
+});
+
+import express  from 'express';
 var config      = require('config');
 var bodyParser 	= require('body-parser');
 var db          = require('./app/lib/db');

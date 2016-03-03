@@ -8,7 +8,7 @@ import nodemon from 'gulp-nodemon';
 gulp.task('start', () => {
 
     nodemon({
-        exec: "node",
+        exec: "babel-node",
         script: "app.js"
 
     }).on('start');
