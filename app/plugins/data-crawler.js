@@ -12,6 +12,7 @@ var dataRequester = require('../plugins/data-requester');
 import db from '../lib/db';
 import * as log from '../plugins/log-helper';
 import {checkNumber} from '../plugins/number-helper';
+import {scrape_stations} from '../plugins/stations-crawler';
 
 // Scrapping the 'Municipios' page, to get information about
 export function scrape_state(){
@@ -57,8 +58,8 @@ export function scrape_state(){
         // Save the state data
         db.models.States.create({
           name: state.substring( state.indexOf('*') + 1 ),
-          initials: state.substring(0, state.indexOf('*')),
-          week_id: data.week
+          initials: state.substring(0, state.indexOf('*')).toLowerCase(),
+          weekId: data.week
         })
         .then(data => { // If saved state data, continue
           stateData = data;
@@ -84,16 +85,17 @@ export function scrape_state(){
 
                     let request = $(this).children('td:nth-child(1)').find('a').attr('href');
                     let indexed = request.substring( request.indexOf(`'`) + 1 );
+                    let city_request = indexed.slice(0, -3);
 
                     // Save the city data
                     db.models.Cities.create({
-                        name: $(this).children('td:nth-child(1)').text(),
-                        request: indexed.slice(0, -3),
+                        name: $(this).children('td:nth-child(1)').text().toLowerCase(),
+                        request: city_request,
+                        fuelSysId: fuel.substring(0, fuel.indexOf('*')),
                         fuel: fuel.substring( fuel.indexOf('*') + 1 ),
                         StateId: stateData.id
                       })
                       .then(cityData => {
-
 
                         db.models.ConsumersPrices.create({
                             averagePrice: checkNumber( $(this).children('td:nth-child(3)').text() ),
@@ -113,6 +115,9 @@ export function scrape_state(){
                             CityId: cityData.id
                           })
                           .then(distribuitionData => {});
+
+                        // Call the stations crawler, to fill all the stations
+                        //scrape_stations(city_request, data, cityData.fuelSysId, cityData.fuel);
 
                         log.success(`Crawled ${cityData.fuel} from ${cityData.name} - ${stateData.initials}`);
 

@@ -24,6 +24,10 @@ module.exports = (sequelize, DataType) => {
     flag: {
       type: DataType.STRING,
       allowNull: true
+    },
+    fuel: {
+      type: DataType.STRING,
+      allowNull: true
     }
 
   }, {

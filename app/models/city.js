@@ -13,7 +13,7 @@ module.exports = (sequelize, DataType) => {
       type: DataType.STRING,
       allowNull: false
     },
-    request: {
+    fuelSysId: {
       type: DataType.STRING,
       allowNull: false
     },

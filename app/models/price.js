@@ -10,25 +10,21 @@ module.exports = (sequelize, DataType) => {
       autoIncrement: true,
       allowNull: false
     },
-    type: {
-      type: DataType.STRING(50),
-      allowNull: false
-    },
     sellPrice: {
       type: DataType.DECIMAL(10, 3),
       allowNull: false
     },
     buyPrice: {
       type: DataType.DECIMAL(10, 3),
-      allowNull: false
+      allowNull: true
     },
     saleMode: {
       type: DataType.STRING(10),
-      allowNull: false
+      allowNull: true
     },
     provider: {
       type: DataType.STRING(20),
-      allowNull: false
+      allowNull: true
     },
     date: {
       type: DataType.DATE,

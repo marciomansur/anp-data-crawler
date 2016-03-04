@@ -6,6 +6,8 @@ import db         from './app/lib/db';
 //import cron from './app/lib/cronjobs';
 import * as dataCrawler from './app/plugins/data-crawler';
 
+var router = require('./app/routes');
+
 var app = express();
 var port = process.env.PORT || config.get("http.port");
 
@@ -16,6 +18,9 @@ app.set('port', port);
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
+app.use('/statistics', router);
+
+Console.log('Creating database...');
 db.sequelize.sync({force: true}).done(() =>{
 
   app.listen(app.get('port'), (err) =>{

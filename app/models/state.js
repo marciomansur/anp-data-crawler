@@ -17,7 +17,7 @@ module.exports = (sequelize, DataType) => {
       type: DataType.STRING(2),
       allowNull: false
     },
-    week_id: {
+    weekId: {
       type: DataType.STRING,
       allowNull: false
     }
