@@ -3,6 +3,8 @@ import config     from 'config';
 import bodyParser from 'body-parser';
 import db         from './app/lib/db';
 
+import cron from './app/lib/cronjobs';
+
 var app = express();
 var port = process.env.PORT || config.get("http.port");
 

@@ -13,9 +13,7 @@ import db from '../lib/db';
 import * as log from '../plugins/log-helper';
 
 // Scrapping the 'Municipios' page, to get information about
-module.exports = () => {
-
-  return new Promise((resolve, reject) => {
+export function scrape_state(){
 
     // Created a standard request, and to "eachs" to find data for
     // every fuel in every state
@@ -117,13 +115,11 @@ module.exports = () => {
 
                       })
                       .catch(err => {
-                        reject(err);
                         log.error(err);
                       });
 
                     })
                     .catch(err => {
-                      reject(err);
                       log.error(err);
                     });
 
@@ -132,14 +128,13 @@ module.exports = () => {
                 })
                 .catch((err) => {
 
-                  reject(err);
                   log.error(err);
                 });
             });
 
           })
           .catch((err) =>{
-            reject(err);
+
             log.error(err);
           });
 
@@ -150,5 +145,4 @@ module.exports = () => {
 
           log.error(err);
       });
-  });
 };
