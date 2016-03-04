@@ -3,8 +3,7 @@ import config     from 'config';
 import bodyParser from 'body-parser';
 import db         from './app/lib/db';
 
-//import cron from './app/lib/cronjobs';
-import * as dataCrawler from './app/plugins/data-crawler';
+import cron from './app/lib/cronjobs';
 
 var router = require('./app/routes');
 
@@ -20,7 +19,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
 app.use('/statistics', router);
 
-Console.log('Creating database...');
+console.log('Creating database...');
 db.sequelize.sync({force: true}).done(() =>{
 
   app.listen(app.get('port'), (err) =>{
@@ -30,8 +29,6 @@ db.sequelize.sync({force: true}).done(() =>{
 
     console.log(`Server up, port: ${port}`);
 
-    // Run the crawler at first time
-    dataCrawler.scrape_state();
   });
 
 });

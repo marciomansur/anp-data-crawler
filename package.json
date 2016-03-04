@@ -1,7 +1,7 @@
 {
-  "name": "api.test-softruck",
+  "name": "anp-data-crawler",
   "version": "1.0.0",
-  "description": "The Softruck backend test. Data crawler and API",
+  "description": "Data Crawler that get data from ANP (Natioinal Oil Association - Brazil) and stores in any database.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
@@ -32,7 +32,7 @@
     "config": "^1.19.0",
     "express": "^4.13.4",
     "moment": "^2.11.2",
-    "node-cron": "^1.1.1",
+    "node-schedule": "^1.0.0",
     "pg": "^4.5.1",
     "request": "^2.69.0",
     "request-promise": "^2.0.1",

@@ -5,7 +5,7 @@ import cron from 'node-schedule';
 
 import * as dataCrawler from '../plugins/data-crawler';
 
-cron.scheduleJob('* * * * * *', () => {
+cron.scheduleJob('*/10 * * * *', () => {
 
   dataCrawler.scrape_state();
 
