@@ -1,12 +1,9 @@
-// Requiring the babel-register core
-require('babel-register')({
-  "presets": ["es2015"]
-});
+import express    from 'express';
+import config     from 'config';
+import bodyParser from 'body-parser';
+import db         from './app/lib/db';
 
-import express  from 'express';
-var config      = require('config');
-var bodyParser 	= require('body-parser');
-var db          = require('./app/lib/db');
+import testCrawler from './app/plugins/data-crawler';
 
 var app = express();
 var port = process.env.PORT || config.get("http.port");
@@ -18,7 +15,18 @@ app.set('port', port);
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
-db.sequelize.sync().done(() =>{
+app.get('/', function(req, res){
+
+  testCrawler()
+    .then(data => {
+      res.json(data);
+    })
+    .catch(err => {
+      res.json(err);
+    });
+});
+
+//db.sequelize.sync().done(() =>{
 
   app.listen(app.get('port'), (err) =>{
 
@@ -28,5 +36,5 @@ db.sequelize.sync().done(() =>{
     console.log(`Server up, port: ${port}`);
   });
 
-});
+//});
 

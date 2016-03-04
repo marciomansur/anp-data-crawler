@@ -1,13 +1,16 @@
 'use strict';
 // NPM Modules
-// NOTE: Some modules cannot be used in es6 or outside the strict mode)
-var request = require('request-promise');
-var cheerio = require('cheerio');
-var config  = require('config');
-var _       = require('underscore');
+import request from 'request-promise';
+import cheerio from 'cheerio';
+import config  from 'config';
+import _       from 'underscore';
 
 // Getting first parameters
-var stateCrawler = require('../plugins/state-crawler');
+var dataRequester = require('../plugins/data-requester');
+
+// Get models to store data
+import db from '../lib/db';
+import * as log from '../plugins/log-helper';
 
 // Scrapping the 'Municipios' page, to get information about
 module.exports = () => {
@@ -16,7 +19,7 @@ module.exports = () => {
 
     // Created a standard request, and to "eachs" to find data for
     // every fuel in every state
-    stateCrawler()
+    dataRequester()
       .then((data) => {
 
         // Request options
@@ -44,79 +47,108 @@ module.exports = () => {
           }
         };
 
-        let states = [];
-        let statistics = [];
-
         // First: Will pass in every state
         _.each(data.states, (state) =>{
 
           options.form.selEstado = state;
 
-          var dataState = {};
-          dataState.cities = [];
-          dataState.state = state.substring( state.indexOf('*') + 1 );;
+          // Save the state data
+          db.models.States.create({
+            name: state.substring( state.indexOf('*') + 1 ),
+            initials: state.substring(0, state.indexOf('*')),
+            week_id: data.week
+          })
+          .then(stateData => { // If saved state data, continue
 
-          _.each(data.fuels, (fuel) => {
+            _.each(data.fuels, (fuel) => {
 
-            options.form.selCombustivel = fuel;
+              options.form.selCombustivel = fuel;
 
-            // Make the request, with de options
-            request(options)
-              .then(($) => {
+              // Make the request to get the fuels page
+              request(options)
+                .then(($) => {
 
-                // Will start to search after the fourth tr
-                $('.table_padrao.scrollable_table > tr').each(function(){
+                  // Will start to search after the fourth tr
+                  $('.table_padrao.scrollable_table > tr').each(function() {
 
-                  if($(this).index() <= 3){
+                    // Get the data starting the fourth 'tr'
+                    if($(this).index() <= 3)
+                      return;
 
-                    return;
-                  }
+                    let request = $(this).children('td:nth-child(1)').find('a').attr('href');
+                    let indexed = request.substring( request.indexOf(`'`) + 1 );
 
-                  // Create the statistics array
-                  let stats = {
-                    distribuitionPrice: {},
-                    consumerPrice: {}
-                  };
+                    db.models.Cities.create({
+                      name: $(this).children('td:nth-child(1)').text(),
+                      request: indexed.slice(0, -3),
+                      StateId: stateData.id
+                    })
+                    .then(cityData => {
 
-                  stats.name = $(this).children('td:nth-child(1)').text();
-                  stats.fuel = fuel.substring( fuel.indexOf('*') + 1 );
+                      db.models.Statistics.create({
+                        type: fuel.substring( fuel.indexOf('*') + 1 ),
+                        CityId: cityData.id
+                      })
+                      .then(statData => {
 
-                  // Consumer Price
-                  stats.consumerPrice.averagePrice     = $(this).children('td:nth-child(3)').text();
-                  stats.consumerPrice.standarDeviation = $(this).children('td:nth-child(4)').text();
-                  stats.consumerPrice.minPrice         = $(this).children('td:nth-child(5)').text();
-                  stats.consumerPrice.maxPrice         = $(this).children('td:nth-child(6)').text();
-                  stats.consumerPrice.averageMargin    = $(this).children('td:nth-child(7)').text();
+                        db.models.ConsurmersPrices.create({
+                          averagePrice: $(this).children('td:nth-child(3)').text(),
+                          standarDeviation: $(this).children('td:nth-child(4)').text(),
+                          minPrice: $(this).children('td:nth-child(5)').text(),
+                          maxPrice: $(this).children('td:nth-child(6)').text(),
+                          averageMargin: $(this).children('td:nth-child(7)').text(),
+                          StatisticId: statData.id
+                        })
+                        .then(consumerData => {
 
-                  // Distribuition Price
-                  stats.distribuitionPrice.averagePrice     = $(this).children('td:nth-child(8)').text();
-                  stats.distribuitionPrice.standarDeviation = $(this).children('td:nth-child(9)').text();
-                  stats.distribuitionPrice.minPrice         = $(this).children('td:nth-child(10)').text();
-                  stats.distribuitionPrice.maxPrice         = $(this).children('td:nth-child(11)').text();
+                          db.models.DistribuitionsPrices.create({
+                            averagePrice: $(this).children('td:nth-child(8)').text(),
+                            standarDeviation: $(this).children('td:nth-child(9)').text(),
+                            minPrice: $(this).children('td:nth-child(10)').text(),
+                            maxPrice: $(this).children('td:nth-child(11)').text(),
+                            StatisticId: statData.id
+                          })
+                          .then(distribuitionData => {
 
-                  statistics.push(stats);
+                            log.success(`Crawled ${statData.type} from ${cityData.name} - ${stateData.initials}`);
+                          });
 
-                });
+                        });
 
-                dataState.cities.push(statistics);
+                      })
+                      .catch(err => {
+                        reject(err);
+                        log.error(err);
+                      });
 
-              })
-              .catch((err) => {
+                    })
+                    .catch(err => {
+                      reject(err);
+                      log.error(err);
+                    });
+
+                  });
+
+                })
+                .catch((err) => {
 
                   reject(err);
-                  console.log(`Error at crawling data: ${err}`);
-              });
+                  log.error(err);
+                });
+            });
+
+          })
+          .catch((err) =>{
+            reject(err);
+            log.error(err);
           });
 
-          states.push(dataState);
-
-          resolve(states);
         });
 
       })
       .catch((err) => {
 
-          console.log(`Error at crawling data: ${err}`);
+          log.error(err);
       });
   });
 };

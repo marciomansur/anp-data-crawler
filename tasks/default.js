@@ -11,7 +11,7 @@ gulp.task('default', () => {
 
 // Tasks for development
 gulp.task('dev', [
-    'babel',
+    'scripts',
     'lint',
     'start',
     'watch'
@@ -19,7 +19,7 @@ gulp.task('dev', [
 
 // Tasks preparing for deploy
 gulp.task('prod', [
-    'babel',
+    'scripts',
     'lint',
     'start'
 ]);

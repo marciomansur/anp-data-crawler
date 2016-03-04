@@ -5,7 +5,7 @@
 import gulp   from 'gulp';
 import babel  from 'gulp-babel';
 
-gulp.task('babel', () => {
+gulp.task('scripts', () => {
 
   gulp.src([`**/*.j`,`!node_modules/**`])
     .pipe(babel({

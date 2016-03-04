@@ -1,10 +1,8 @@
 'use strict';
 
-var request = require('request-promise');
-var cheerio = require('cheerio');
-var config  = require('config');
-
-
+import request from 'request-promise';
+import cheerio from 'cheerio';
+import config  from 'config';
 
 // Scraping the Index page method
 module.exports = () => {
