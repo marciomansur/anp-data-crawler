@@ -4,6 +4,7 @@ import bodyParser from 'body-parser';
 import db         from './app/lib/db';
 
 import cron from './app/lib/cronjobs';
+import * as dataCrawler from './app/plugins/data-crawler';
 
 var router = require('./app/routes');
 
@@ -29,6 +30,7 @@ db.sequelize.sync({force: true}).done(() =>{
 
     console.log(`Server up, port: ${port}`);
 
+    dataCrawler.scrape_state();
   });
 
 });
