@@ -3,8 +3,6 @@ import config     from 'config';
 import bodyParser from 'body-parser';
 import db         from './app/lib/db';
 
-import testCrawler from './app/plugins/data-crawler';
-
 var app = express();
 var port = process.env.PORT || config.get("http.port");
 
@@ -15,18 +13,7 @@ app.set('port', port);
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
-app.get('/', function(req, res){
-
-  testCrawler()
-    .then(data => {
-      res.json(data);
-    })
-    .catch(err => {
-      res.json(err);
-    });
-});
-
-//db.sequelize.sync().done(() =>{
+db.sequelize.sync().done(() =>{
 
   app.listen(app.get('port'), (err) =>{
 
@@ -36,5 +23,5 @@ app.get('/', function(req, res){
     console.log(`Server up, port: ${port}`);
   });
 
-//});
+});
 
