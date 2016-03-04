@@ -16,6 +16,10 @@ module.exports = (sequelize, DataType) => {
     request: {
       type: DataType.STRING,
       allowNull: false
+    },
+    fuel: {
+      type: DataType.STRING,
+      allowNull: false
     }
 
   }, {
@@ -25,7 +29,8 @@ module.exports = (sequelize, DataType) => {
 
         Cities.hasMany(models.Stations);
         Cities.belongsTo(models.States);
-        Cities.hasMany(models.Statistics);
+        Cities.hasOne(models.DistribuitionsPrices);
+        Cities.hasOne(models.ConsumersPrices);
       }
     },
     tableName: 'cities',

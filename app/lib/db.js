@@ -12,8 +12,8 @@ var Sequelize = require('sequelize'),
 
     host: config.get("db.host"),
     dialect: config.get("db.sgbd"),
-    port: config.get("db.port")
-
+    port: config.get("db.port"),
+    logging: false
     });
 
   let db = {

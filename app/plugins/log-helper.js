@@ -1,12 +1,12 @@
 'use strict';
-import $ from 'clor';
+import clor from 'clor';
 
 export function success(message){
 
-  $.bold.green(`Success log: ${message}`);
+  clor.green.bold.log(`Success log: ${message}`);
 }
 
 export function error(message){
 
-  $.bold.red(`Error at crawling data: ${message}`);
+  clor.red.bold.log(`Error at crawling data: ${message}`);
 }

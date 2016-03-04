@@ -3,7 +3,8 @@ import config     from 'config';
 import bodyParser from 'body-parser';
 import db         from './app/lib/db';
 
-import cron from './app/lib/cronjobs';
+//import cron from './app/lib/cronjobs';
+import * as dataCrawler from './app/plugins/data-crawler';
 
 var app = express();
 var port = process.env.PORT || config.get("http.port");
@@ -15,7 +16,7 @@ app.set('port', port);
 app.use(bodyParser.json({limit: '50mb'}));
 app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 
-db.sequelize.sync().done(() =>{
+db.sequelize.sync({force: true}).done(() =>{
 
   app.listen(app.get('port'), (err) =>{
 
@@ -23,6 +24,9 @@ db.sequelize.sync().done(() =>{
       return console.log(`Error when initializing the server: ${err}`);
 
     console.log(`Server up, port: ${port}`);
+
+    // Run the crawler at first time
+    dataCrawler.scrape_state();
   });
 
 });

@@ -12,19 +12,19 @@ module.exports = (sequelize, DataType) => {
     },
     averagePrice: {
       type: DataType.DECIMAL(10, 3),
-      allowNull: false
+      allowNull: true
     },
     standarDeviation: {
       type: DataType.DECIMAL(10, 3),
-      allowNull: false
+      allowNull: true
     },
     minPrice: {
       type: DataType.DECIMAL(10, 3),
-      allowNull: false
+      allowNull: true
     },
     maxPrice: {
       type: DataType.DECIMAL(10, 3),
-      allowNull: false
+      allowNull: true
     }
 
   }, {
@@ -32,7 +32,7 @@ module.exports = (sequelize, DataType) => {
     classMethods: {
       associate: (models) => {
 
-        DistribuitionsPrices.belongsTo(models.Statistics);
+        DistribuitionsPrices.belongsTo(models.Cities);
       }
     },
     tableName: 'distribuitionPrice',
