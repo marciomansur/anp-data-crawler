@@ -16,10 +16,6 @@ module.exports = (sequelize, DataType) => {
     initials: {
       type: DataType.STRING(2),
       allowNull: false
-    },
-    weekId: {
-      type: DataType.STRING,
-      allowNull: false
     }
 
   }, {

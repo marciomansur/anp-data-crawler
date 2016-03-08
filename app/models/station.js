@@ -24,10 +24,6 @@ module.exports = (sequelize, DataType) => {
     flag: {
       type: DataType.STRING,
       allowNull: true
-    },
-    fuel: {
-      type: DataType.STRING,
-      allowNull: true
     }
 
   }, {
@@ -37,6 +33,7 @@ module.exports = (sequelize, DataType) => {
 
         Stations.hasMany(models.Prices);
         Stations.belongsTo(models.Cities);
+        Stations.belongsTo(models.Fuels);
       }
     },
     tableName: 'stations',

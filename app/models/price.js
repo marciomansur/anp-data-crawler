@@ -37,6 +37,7 @@ module.exports = (sequelize, DataType) => {
       associate: (models) => {
 
         Prices.belongsTo(models.Stations);
+        Prices.belongsTo(models.Weeks);
       }
     },
     tableName: 'prices',

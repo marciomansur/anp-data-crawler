@@ -1,15 +1,15 @@
 'use strict';
 module.exports = (sequelize, DataType) => {
 
-  var Cities = sequelize.define('Cities', {
+  var Fuels = sequelize.define('Fuels', {
 
     id: {
       type: DataType.INTEGER,
       primaryKey: true,
-      autoIncrement: true,
+      autoIncrement: false,
       allowNull: false
     },
-    name: {
+    description: {
       type: DataType.STRING,
       allowNull: false
     }
@@ -19,15 +19,14 @@ module.exports = (sequelize, DataType) => {
     classMethods: {
       associate: (models) => {
 
-        Cities.hasMany(models.Stations);
-        Cities.hasMany(models.Statistics);
-        Cities.belongsTo(models.States);
-       }
+        Fuels.hasMany(models.Stations);
+        Fuels.hasMany(models.Statistics);
+      }
     },
-    tableName: 'cities',
+    tableName: 'fuels',
     timestamps: true,
     paranoid: true
   });
 
-  return Cities;
+  return Fuels;
 };
