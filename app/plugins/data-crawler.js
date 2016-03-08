@@ -47,96 +47,142 @@ export function scrape_state(){
         }
       };
 
-      // First: Will pass in every state
-      _.each(data.states, (state) =>{
+      // Verify if this week already has data
+      db.models.Weeks.findById(data.week)
+        .then(dataWeek => {
 
-        options.form.selEstado = state;
+          if(_.isEmpty(dataWeek)){
 
-        var stateData = {};
-        var cityData = {};
+            db.models.Weeks.create({
+              id: data.week,
+              description: data.descWeek
+            })
+            .then(newWeek => {
 
-        // Save the state data
-        db.models.States.create({
-          name: state.substring( state.indexOf('*') + 1 ),
-          initials: state.substring(0, state.indexOf('*')).toLowerCase(),
-          weekId: data.week
+              // First: Will pass in every state
+              _.each(data.states, (state) =>{
+
+                options.form.selEstado = state;
+
+                var stateData = {};
+
+                // Save the state data
+                db.models.States.create({
+                    name: state.substring( state.indexOf('*') + 1 ),
+                    initials: state.substring(0, state.indexOf('*')).toLowerCase(),
+                  })
+                  .then(data => { // If saved state data, continue
+                    stateData = data;
+                  })
+                  .catch((err) =>{
+                    log.error(err);
+                  });
+
+                // for each fuel, in each state, will get all the statistics
+                _.each(data.fuels, (fuel) => {
+
+                  options.form.selCombustivel = fuel;
+
+                  // Make the request to get the fuels page
+                  request(options)
+                    .then(($) => {
+
+                      db.models.Fuels.findOrCreate({
+                        where: {
+                          id: fuel.substring(0, fuel.indexOf('*'))
+                        },
+                        defaults: {
+                          description: fuel.substring( fuel.indexOf('*') + 1 )
+                        }
+                      })
+                      .spread(fuelData => {
+                        console.log(fuelData.description);
+                        // Will start to search after the fourth tr
+                        $('.table_padrao.scrollable_table > tr').each(function() {
+
+                          // Get the data starting the fourth 'tr'
+                          if($(this).index() >= 3){
+
+                            let request = $(this).children('td:nth-child(1)').find('a').attr('href');
+                            let indexed = request.substring( request.indexOf(`'`) + 1 );
+                            let city_request = indexed.slice(0, -3);
+
+                            // Save the city data
+                            db.models.Cities.create({
+                                name: $(this).children('td:nth-child(1)').text(),
+                                request: city_request,
+                                StateId: stateData.id
+                              })
+                              .then(cityData => {
+
+                                db.models.Statistics.create({
+                                  CityId: cityData.id,
+                                  FuelId: fuelData.id,
+                                  WeekId: newWeek.id
+                                })
+                                .then(statisticData => {
+
+                                  db.models.ConsumersPrices.create({
+                                      averagePrice: checkNumber( $(this).children('td:nth-child(3)').text() ),
+                                      standarDeviation: checkNumber( $(this).children('td:nth-child(4)').text() ),
+                                      minPrice: checkNumber( $(this).children('td:nth-child(5)').text() ),
+                                      maxPrice: checkNumber( $(this).children('td:nth-child(6)').text() ),
+                                      averageMargin: checkNumber( $(this).children('td:nth-child(7)').text() ),
+                                      StatisticId: statisticData.id
+                                    })
+                                    .then(data => {});
+
+                                  db.models.DistribuitionsPrices.create({
+                                      averagePrice: checkNumber( $(this).children('td:nth-child(8)').text() ),
+                                      standarDeviation: checkNumber( $(this).children('td:nth-child(9)').text() ),
+                                      minPrice: checkNumber( $(this).children('td:nth-child(10)').text() ),
+                                      maxPrice: checkNumber( $(this).children('td:nth-child(11)').text() ),
+                                      StatisticId: statisticData.id
+                                    })
+                                    .then(distribuitionData => {});
+
+                                  // Call the stations crawler, to fill all the stations
+                                  //scrape_stations(city_request, data, cityData.fuelSysId, cityData.fuel);
+
+                                  log.success(`Crawled data from ${cityData.name} - ${stateData.initials}`);
+
+                                })
+                                .catch(err => {
+                                  log.error(err);
+                                });
+
+                              })
+                              .catch(err => {
+                                log.error(err);
+                              });
+                          }
+
+                        });
+
+                      });
+
+                    })
+                    .catch((err) => {
+
+                      log.error(err);
+                    });
+                });
+
+              });
+            })
+            .catch(err => {
+              log.error(err);
+            });
+          }
+          else
+            log.success(`Weekly data already crawled!`);
+
         })
-        .then(data => { // If saved state data, continue
-          stateData = data;
-        })
-        .catch((err) =>{
+        .catch(err => {
           log.error(err);
         });
 
-        // for each fuel, in each state, will get all the statistics
-        _.each(data.fuels, (fuel) => {
 
-          options.form.selCombustivel = fuel;
-
-          // Make the request to get the fuels page
-          request(options)
-            .then(($) => {
-
-              // Will start to search after the fourth tr
-              $('.table_padrao.scrollable_table > tr').each(function() {
-
-                // Get the data starting the fourth 'tr'
-                if($(this).index() >= 3){
-
-                    let request = $(this).children('td:nth-child(1)').find('a').attr('href');
-                    let indexed = request.substring( request.indexOf(`'`) + 1 );
-                    let city_request = indexed.slice(0, -3);
-
-                    // Save the city data
-                    db.models.Cities.create({
-                        name: $(this).children('td:nth-child(1)').text().toLowerCase(),
-                        request: city_request,
-                        fuelSysId: fuel.substring(0, fuel.indexOf('*')),
-                        fuel: fuel.substring( fuel.indexOf('*') + 1 ),
-                        StateId: stateData.id
-                      })
-                      .then(cityData => {
-
-                        db.models.ConsumersPrices.create({
-                            averagePrice: checkNumber( $(this).children('td:nth-child(3)').text() ),
-                            standarDeviation: checkNumber( $(this).children('td:nth-child(4)').text() ),
-                            minPrice: checkNumber( $(this).children('td:nth-child(5)').text() ),
-                            maxPrice: checkNumber( $(this).children('td:nth-child(6)').text() ),
-                            averageMargin: checkNumber( $(this).children('td:nth-child(7)').text() ),
-                            CityId: cityData.id
-                          })
-                          .then(data => {});
-
-                        db.models.DistribuitionsPrices.create({
-                            averagePrice: checkNumber( $(this).children('td:nth-child(8)').text() ),
-                            standarDeviation: checkNumber( $(this).children('td:nth-child(9)').text() ),
-                            minPrice: checkNumber( $(this).children('td:nth-child(10)').text() ),
-                            maxPrice: checkNumber( $(this).children('td:nth-child(11)').text() ),
-                            CityId: cityData.id
-                          })
-                          .then(distribuitionData => {});
-
-                        // Call the stations crawler, to fill all the stations
-                        //scrape_stations(city_request, data, cityData.fuelSysId, cityData.fuel);
-
-                        log.success(`Crawled ${cityData.fuel} from ${cityData.name} - ${stateData.initials}`);
-
-                      })
-                      .catch(err => {
-                        log.error(err);
-                      });
-                  }
-
-                });
-
-            })
-            .catch((err) => {
-
-              log.error(err);
-            });
-          });
-
-      });
 
     })
     .catch((err) => {
