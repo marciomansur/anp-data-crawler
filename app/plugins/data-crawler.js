@@ -147,9 +147,9 @@ export function scrape_state(){
                                     .then(distribuitionData => {});
 
                                   // Call the stations crawler, to fill all the stations
-                                  scrape_stations(cityData, options, fuelData);
+                                  //scrape_stations(cityData, options, fuelData);
 
-                                  //log.success(`Crawled ${fuelData.description} from ${cityData.name} - ${stateData.initials}`);
+                                  log.success(`Crawled ${fuelData.description} from ${cityData.name} - ${stateData.initials}`);
 
                                 })
                                 .catch(err => {

@@ -42,14 +42,17 @@ You just need to open `config/default.json` and change the database configuratio
   
   By default, I'm using the compose configuration. If you change the config json, when you start the application, the database will be created and the crawler will initiate.
   
-  ## Endpoints
+  ## Endpoint
   
-  Just two endpoints:
+    
+  `GET /reports/:initials/:week_id/:offset/:limit`
   
-
-  `GET /statistics/cities/:city` - Will get the statistics and values using city as parameter.
-  
-  `GET /statistics/state/:initials` - Will get the statistics using the state as parameter
+  Where:
+    
+  `:initials` - The state initials, passed in client
+  `:week_id` - The week of reports
+  `:offset` - Paginated search, offset
+  `:limit`  - Paginated search, limit
   
   ## License
   

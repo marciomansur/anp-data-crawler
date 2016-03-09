@@ -42,8 +42,55 @@ export default class Statistic {
       });
   }
 
-  findByState(req, res){
+  reportStatistics(req, res){
 
+    db.models.Statistics
+      .findAll({
+        attributes: {
+          exclude: [
+            'createdAt',
+            'updatedAt',
+            'deletedAt',
+            'CityId',
+            'FuelId',
+            'WeekId'
+          ]
+        },
+        include: [
+          {
+            model: db.models.Cities,
+            include: {
+              model: State,
+              where: {
+                initials: req.params.initials
+              }
+            }
+          },
+          {
+            model: db.models.Weeks,
+            where: {
+              id: req.params.week_id
+            }
+          },
+          {
+            model: db.models.ConsumersPrices
+          },
+          {
+            model: db.models.DistribuitionsPrices
+          },
+          {
+            model: db.models.Fuels
+          }
+        ],
+        offset: req.params.offset,
+        limit: req.params.limit
 
+      })
+      .then(data => {
+        res.json(data);
+      })
+      .catch(err => {
+        res.status(400).send(err);
+      });
   }
 }

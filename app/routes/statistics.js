@@ -9,7 +9,6 @@ let statistics = new Statistics();
 // Weeks and states routes
 router.get('/states', statistics.findAllStates);
 router.get('/weeks', statistics.findAllWeeks);
-
-router.get('/state/:initials', statistics.findByState);
+router.get('/reports/:initials/:week_id/:offset/:limit', statistics.reportStatistics);
 
 module.exports = router;
