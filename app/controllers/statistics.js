@@ -1,36 +1,43 @@
 'use strict';
 import db from '../lib/db';
 
+const State = db.models.States;
+
 // City class
 export default class Statistic {
 
-  findCityData(req, res){
 
-    db.models.Cities
+  findAllWeeks(req, res){
+
+    db.models.Weeks
       .findAll({
-        attributes: {
-          exclude: ['fuelSysId']
-        },
-        where: {
-          name: req.params.name
-        },
-        include: [
-          {
-            model: db.models.ConsumersPrices
-          },
-          {
-            model: db.models.DistribuitionsPrices
-          }
+        attributes: [
+          'id',
+          'description'
         ]
       })
       .then(data => {
-        res.json({
-          success: true,
-          status: 200,
-          data: data
-        });
+        res.json(data);
       })
       .catch(err => {
+        res.status(400).send(err);
+      });
+  }
+
+  findAllStates(req, res) {
+
+    State
+      .findAll({
+        attributes: [
+          'initials',
+          'name'
+        ]
+      })
+      .then(data => {
+        res.json(data);
+      })
+      .catch(err => {
+
         res.status(400).send(err);
       });
   }
