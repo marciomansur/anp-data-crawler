@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({limit: '50mb', extended: true}));
 app.use('/statistics', router);
 
 console.log('Creating database...');
-db.sequelize.sync({force: true}).done(() =>{
+db.sequelize.sync().done(() =>{
 
   app.listen(app.get('port'), (err) =>{
 
