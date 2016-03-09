@@ -40,20 +40,20 @@ You just need to open `config/default.json` and change the database configuratio
   }
   ```
   
-  By default, I'm using the compose configuration. If you change the config json, when you start the application, the database will be created and the crawler will initiate.
+By default, I'm using the compose configuration. If you change the config json, when you start the application, the database will be created and the crawler will initiate.
+
+## Endpoint
+
   
-  ## Endpoint
+`GET /reports/:initials/:week_id/:offset/:limit`
+
+Where:
   
-    
-  `GET /reports/:initials/:week_id/:offset/:limit`
-  
-  Where:
-    
-  `:initials` - The state initials, passed in client
-  `:week_id` - The week of reports
-  `:offset` - Paginated search, offset
-  `:limit`  - Paginated search, limit
-  
-  ## License
-  
-  MIT
+`:initials` - The state initials, passed in client
+`:week_id` - The week of reports
+`:offset` - Paginated search, offset
+`:limit`  - Paginated search, limit
+
+## License
+
+MIT
