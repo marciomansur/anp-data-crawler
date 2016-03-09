@@ -96,7 +96,7 @@ export function scrape_state(){
                         }
                       })
                       .spread(fuelData => {
-                        console.log(fuelData.description);
+
                         // Will start to search after the fourth tr
                         $('.table_padrao.scrollable_table > tr').each(function() {
 
@@ -108,12 +108,17 @@ export function scrape_state(){
                             let city_request = indexed.slice(0, -3);
 
                             // Save the city data
-                            db.models.Cities.create({
-                                name: $(this).children('td:nth-child(1)').text(),
-                                request: city_request,
-                                StateId: stateData.id
+                            db.models.Cities.findOrCreate({
+                                where: {
+                                  id: indexed.substring(0, indexed.indexOf('*'))
+                                },
+                                defaults: {
+                                  name: $(this).children('td:nth-child(1)').text(),
+                                  request: city_request,
+                                  StateId: stateData.id
+                                }
                               })
-                              .then(cityData => {
+                              .spread(cityData => {
 
                                 db.models.Statistics.create({
                                   CityId: cityData.id,
@@ -142,18 +147,15 @@ export function scrape_state(){
                                     .then(distribuitionData => {});
 
                                   // Call the stations crawler, to fill all the stations
-                                  //scrape_stations(city_request, data, cityData.fuelSysId, cityData.fuel);
+                                  scrape_stations(cityData, options, fuelData);
 
-                                  log.success(`Crawled data from ${cityData.name} - ${stateData.initials}`);
+                                  //log.success(`Crawled ${fuelData.description} from ${cityData.name} - ${stateData.initials}`);
 
                                 })
                                 .catch(err => {
                                   log.error(err);
                                 });
 
-                              })
-                              .catch(err => {
-                                log.error(err);
                               });
                           }
 

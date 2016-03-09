@@ -32,7 +32,7 @@ module.exports = (sequelize, DataType) => {
     classMethods: {
       associate: (models) => {
 
-        DistribuitionsPrices.belongsTo(models.Cities);
+        DistribuitionsPrices.belongsTo(models.Statistics);
       }
     },
     tableName: 'distribuitionPrice',
